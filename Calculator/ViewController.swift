@@ -33,7 +33,11 @@ class ViewController: UIViewController {
             return Double(display.text!)!
         }
         set {
+            if newValue == floor(newValue) { //if displayValue is set to an integer, display as an integer
+                display.text = String(Int(newValue))
+            } else {
             display.text = String(newValue)
+            }
         }
     }
     
