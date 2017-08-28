@@ -6,8 +6,7 @@
 //  Copyright © 2017 Andrew Su. All rights reserved.
 //
 
-//TODO: no leading zeros
-//TODO: integers displayed as integers
+//TODO:operations iwth zero are weird
 
 import UIKit
 
@@ -19,12 +18,27 @@ class ViewController: UIViewController {
 //    var numberAlreadyHasDecimal = false
     @IBAction func touchDigit(_ sender: UIButton) {
         let digit = sender.currentTitle!
-        if userIsTyping {
-            let textCurrentlyInDisplay = display.text!
-            display.text = textCurrentlyInDisplay + digit
-        } else {
-            display.text = digit
-            userIsTyping = digit != "0" //if the first digit is zero, keep userIsTyping as false to prevent leading zeroes
+        if digit == "." {
+            if userIsTyping {
+                if !display.text!.contains(".") {
+                    display.text = display.text! + "."
+                }
+            } else {
+                display.text = "0."
+                userIsTyping = true
+            }
+        } else { //regular digit
+            if userIsTyping {
+                let textCurrentlyInDisplay = display.text!
+                if textCurrentlyInDisplay == "0" {
+                    display.text = digit
+                } else {
+                    display.text = textCurrentlyInDisplay + digit
+                }
+            } else {
+                display.text = digit
+                userIsTyping = true //if the first digit is zero, keep userIsTyping as false to prevent leading zeroes
+            }
         }
     }
    

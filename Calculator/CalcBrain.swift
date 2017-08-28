@@ -21,10 +21,14 @@ struct CalcBrain {
     private var operations: Dictionary<String,Operation> = [
         "π" : Operation.constant(Double.pi),
         "e" : Operation.constant(M_E),
+        "sin" : Operation.unaryOperation(sin),
         "cos" : Operation.unaryOperation(cos),
+        "tan" : Operation.unaryOperation(tan),
         "√" : Operation.unaryOperation(sqrt),
         "+/-": Operation.unaryOperation({-$0}),
             //long way => {(op1: Double) -> Double in return -op1}
+        "%": Operation.unaryOperation({$0 / 100}),
+        "1/x": Operation.unaryOperation({1 / $0}),
         "×": Operation.binaryOperation({$0 * $1}),
         "+": Operation.binaryOperation({$0 + $1}),
         "-": Operation.binaryOperation({$0 - $1}),
