@@ -10,16 +10,57 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+    @IBOutlet weak var display: UILabel!
+    
+    var userIsTyping = false //or userCanAddDigits
+//    var numberAlreadyHasDecimal = false
+    @IBAction func touchDigit(_ sender: UIButton) {
+        let digit = sender.currentTitle!
+        if userIsTyping {
+            let textCurrentlyInDisplay = display.text!
+            display.text = textCurrentlyInDisplay + digit
+        } else {
+            display.text = digit
+            userIsTyping = true
+        }
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+   
+    var displayValue: Double {
+        get {
+            return Double(display.text!)!
+        }
+        set {
+            display.text = String(newValue)
+        }
     }
-
-
+    
+    private var calculatorBrain = CalcBrain();
+    
+    
+//    @IBAction func touchDecimal(_ sender: UIButton) {
+//        if !numberAlreadyHasDecimal {
+//            if let textCurrentlyInDisplay = display.text {
+//                display.text = textCurrentlyInDisplay + "."
+//                numberAlreadyHasDecimal = true;
+//            }
+//        }
+//    }
+    
+    @IBAction func performOperation(_ sender: UIButton) {
+        if userIsTyping {
+            calculatorBrain.setOperand(displayValue)
+            userIsTyping = false
+        }
+        if let operatorSymbol = sender.currentTitle {
+            calculatorBrain.performOperation(operatorSymbol)
+        }
+        if let result = calculatorBrain.result {
+            displayValue = result //does result need to be unwrapped
+        }
+    }
+    
+    /*/*probably need a func to makeDisplayable(Double)->string that fits and
+    takes off trailing zeros*/
+    nvm, we can used computer properties */
 }
 
