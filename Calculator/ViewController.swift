@@ -6,6 +6,9 @@
 //  Copyright © 2017 Andrew Su. All rights reserved.
 //
 
+//TODO: no leading zeros
+//TODO: integers displayed as integers
+
 import UIKit
 
 class ViewController: UIViewController {
@@ -21,7 +24,7 @@ class ViewController: UIViewController {
             display.text = textCurrentlyInDisplay + digit
         } else {
             display.text = digit
-            userIsTyping = true
+            userIsTyping = digit != "0" //if the first digit is zero, keep userIsTyping as false to prevent leading zeroes
         }
     }
    
