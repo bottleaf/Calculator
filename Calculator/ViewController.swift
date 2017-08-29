@@ -14,6 +14,7 @@ import UIKit
 class ViewController: UIViewController {
 
     @IBOutlet weak var display: UILabel!
+    @IBOutlet weak var sequenceOfOperands: UILabel!
     
     var userIsTyping = false //or userCanAddDigits
 //    var numberAlreadyHasDecimal = false
