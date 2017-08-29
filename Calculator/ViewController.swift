@@ -77,8 +77,10 @@ class ViewController: UIViewController {
         if let operatorSymbol = sender.currentTitle {
             calculatorBrain.performOperation(operatorSymbol)
         }
+        sequenceOfOperands.text = calculatorBrain.getDescription()
         if let result = calculatorBrain.result {
             displayValue = result //does result need to be unwrapped
+            userIsTyping = false
         }
     }
     

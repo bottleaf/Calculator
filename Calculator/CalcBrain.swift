@@ -42,33 +42,34 @@ struct CalcBrain {
     // ctrl + i = indent
     mutating func performOperation(_ symbol: String) {
         if let operation = operations[symbol] {
-            switch operation { //switch does not fall through
+            switch operation {
             case .constant(let value):
                 accumulator = value
-                description = symbol
+                description += symbol
             case .unaryOperation(let function):
                 if accumulator != nil {
-                    description = "\(symbol)(\(String(describing: accumulator)))"
+                    description = symbol + "(" + description + ")"
                     accumulator = function(accumulator!)
                 }
             case .binaryOperation(let function):
                 if accumulator != nil {
                     pendingBinaryOperation = PendingBinaryOperation(function: function, firstOperand: accumulator!)
-                    description = String(describing: accumulator) + symbol
+                    description = description + symbol
                     accumulator = nil
                 }
             case .equals:
-                description = description + String(describing: accumulator)
                 performPendingBinaryOperation()
             case .clear:
                 pendingBinaryOperation = nil
                 accumulator = 0
+                description = ""
             }
         }
     }
     
     private mutating func performPendingBinaryOperation() {
         if pendingBinaryOperation != nil && accumulator != nil {
+            description = description + String(accumulator!)
             accumulator = pendingBinaryOperation!.perform(with: accumulator!)
             pendingBinaryOperation = nil
         }
@@ -85,6 +86,9 @@ struct CalcBrain {
     }
     
     mutating func setOperand(_ operand: Double) {
+        if !resultIsPending {
+            description = String(operand)
+        }
         accumulator = operand
     }
     
@@ -99,4 +103,17 @@ struct CalcBrain {
             return pendingBinaryOperation != nil
         }
     }
+    
+    func getDescription() -> String {
+        if description == "" {
+            return ""
+        } else {
+            if resultIsPending {
+                return description + " ..."
+            } else {
+                return description + "="
+            }
+        }
+    }
+
 }
