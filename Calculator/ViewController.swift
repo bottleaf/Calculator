@@ -6,7 +6,8 @@
 //  Copyright © 2017 Andrew Su. All rights reserved.
 //
 
-//TODO:operations iwth zero are weird
+//TODO:memory of operation
+//landscape mode
 
 import UIKit
 

@@ -11,13 +11,15 @@ import Foundation
 struct CalcBrain {
     
     private var accumulator: Double? //accumulator is unintialized in the beginning
-    
+    private var description: String = ""
     private enum Operation {
         case constant(Double)
         case unaryOperation((Double) -> Double)
         case binaryOperation((Double, Double) -> Double)
         case equals
+        case clear
     }
+    
     private var operations: Dictionary<String,Operation> = [
         "π" : Operation.constant(Double.pi),
         "e" : Operation.constant(M_E),
@@ -29,11 +31,13 @@ struct CalcBrain {
             //long way => {(op1: Double) -> Double in return -op1}
         "%": Operation.unaryOperation({$0 / 100}),
         "1/x": Operation.unaryOperation({1 / $0}),
+        "ln": Operation.unaryOperation(log),
         "×": Operation.binaryOperation({$0 * $1}),
         "+": Operation.binaryOperation({$0 + $1}),
         "-": Operation.binaryOperation({$0 - $1}),
         "÷": Operation.binaryOperation({$0 / $1}),
-        "=": Operation.equals
+        "=": Operation.equals,
+        "C": Operation.clear
     ]
     // ctrl + i = indent
     mutating func performOperation(_ symbol: String) {
@@ -41,17 +45,24 @@ struct CalcBrain {
             switch operation { //switch does not fall through
             case .constant(let value):
                 accumulator = value
+                description = symbol
             case .unaryOperation(let function):
                 if accumulator != nil {
+                    description = "\(symbol)(\(String(describing: accumulator)))"
                     accumulator = function(accumulator!)
                 }
             case .binaryOperation(let function):
                 if accumulator != nil {
                     pendingBinaryOperation = PendingBinaryOperation(function: function, firstOperand: accumulator!)
+                    description = String(describing: accumulator) + symbol
                     accumulator = nil
                 }
             case .equals:
+                description = description + String(describing: accumulator)
                 performPendingBinaryOperation()
+            case .clear:
+                pendingBinaryOperation = nil
+                accumulator = 0
             }
         }
     }
@@ -80,6 +91,12 @@ struct CalcBrain {
     var result: Double? {
         get {
             return accumulator
+        }
+    }
+    
+    var resultIsPending: Bool {
+        get {
+            return pendingBinaryOperation != nil
         }
     }
 }
