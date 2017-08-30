@@ -12,6 +12,7 @@ struct CalcBrain {
     
     private var accumulator: Double? //accumulator is unintialized in the beginning
     private var description: String = ""
+    private var secondOperandAlreadyShown = false;
     private enum Operation {
         case constant(Double)
         case unaryOperation((Double) -> Double)
@@ -44,12 +45,20 @@ struct CalcBrain {
         if let operation = operations[symbol] {
             switch operation {
             case .constant(let value):
-                accumulator = value
                 description += symbol
+                if resultIsPending {
+                    secondOperandAlreadyShown = true
+                }
+                accumulator = value
             case .unaryOperation(let function):
                 if accumulator != nil {
-                    description = symbol + "(" + description + ")"
-                    accumulator = function(accumulator!)
+                    if resultIsPending {
+                        description += symbol + "(" + doubleToString(accumulator!) + ")"
+                        secondOperandAlreadyShown = true;
+                    } else {
+                        description = symbol + "(" + description + ")"
+                    }
+                        accumulator = function(accumulator!)
                 }
             case .binaryOperation(let function):
                 if accumulator != nil {
@@ -63,13 +72,18 @@ struct CalcBrain {
                 pendingBinaryOperation = nil
                 accumulator = 0
                 description = ""
+                secondOperandAlreadyShown = false
             }
         }
     }
     
     private mutating func performPendingBinaryOperation() {
         if pendingBinaryOperation != nil && accumulator != nil {
-            description = description + String(accumulator!)
+            if secondOperandAlreadyShown {
+                secondOperandAlreadyShown = false
+            } else {
+                description = description + doubleToString(accumulator!)
+            }
             accumulator = pendingBinaryOperation!.perform(with: accumulator!)
             pendingBinaryOperation = nil
         }
@@ -87,7 +101,7 @@ struct CalcBrain {
     
     mutating func setOperand(_ operand: Double) {
         if !resultIsPending {
-            description = String(operand)
+            description = doubleToString(operand)
         }
         accumulator = operand
     }
@@ -114,6 +128,10 @@ struct CalcBrain {
                 return description + "="
             }
         }
+    }
+    
+    func doubleToString(_ numToConvert: Double) -> String {
+        return ((floor(numToConvert) == numToConvert) ? String(Int(numToConvert)) : String(numToConvert))
     }
 
 }
