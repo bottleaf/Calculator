@@ -117,7 +117,7 @@ struct CalcBrain {
     
     func getDescription() -> String {
         if description == "" {
-            return ""
+            return " "
         } else {
             if resultIsPending {
                 return description + " ..."
