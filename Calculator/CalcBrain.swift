@@ -30,7 +30,7 @@ struct CalcBrain {
         "√" : Operation.unaryOperation(sqrt),
         "+/-": Operation.unaryOperation({-$0}),
             //long way => {(op1: Double) -> Double in return -op1}
-        "%": Operation.unaryOperation({$0 / 100}),
+        "%": Operation.unaryOperation({$0 * 100}),
         "1/x": Operation.unaryOperation({1 / $0}),
         "ln": Operation.unaryOperation(log),
         "×": Operation.binaryOperation(*),
