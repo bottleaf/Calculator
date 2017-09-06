@@ -15,8 +15,7 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var display: UILabel!
     @IBOutlet weak var sequenceOfOperands: UILabel!
-    
-    var userIsTyping = false //or userCanAddDigits
+     var userIsTyping = false //or userCanAddDigits
 //    var numberAlreadyHasDecimal = false
     @IBAction func touchDigit(_ sender: UIButton) {
         let digit = sender.currentTitle!
@@ -75,7 +74,7 @@ class ViewController: UIViewController {
             userIsTyping = false
         }
         if let operatorSymbol = sender.currentTitle {
-            calculatorBrain.performOperation(operatorSymbol)
+            calculatorBrain.performOperation(representedBy: operatorSymbol)
         }
         sequenceOfOperands.text = calculatorBrain.getDescription()
         if let result = calculatorBrain.result {

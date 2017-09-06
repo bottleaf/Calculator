@@ -33,15 +33,16 @@ struct CalcBrain {
         "%": Operation.unaryOperation({$0 / 100}),
         "1/x": Operation.unaryOperation({1 / $0}),
         "ln": Operation.unaryOperation(log),
-        "×": Operation.binaryOperation({$0 * $1}),
-        "+": Operation.binaryOperation({$0 + $1}),
-        "-": Operation.binaryOperation({$0 - $1}),
-        "÷": Operation.binaryOperation({$0 / $1}),
+        "×": Operation.binaryOperation(*),
+        "+": Operation.binaryOperation(+),
+        "-": Operation.binaryOperation(-),
+        "÷": Operation.binaryOperation(/),
         "=": Operation.equals,
         "C": Operation.clear
     ]
     // ctrl + i = indent
-    mutating func performOperation(_ symbol: String) {
+    //performOperation changes the state of CalcBrain by calling the associaed function and updating accumulator.
+    mutating func performOperation(representedBy symbol: String) {
         if let operation = operations[symbol] {
             switch operation {
             case .constant(let value):
@@ -107,15 +108,11 @@ struct CalcBrain {
     }
     
     var result: Double? {
-        get {
             return accumulator
-        }
     }
     
     var resultIsPending: Bool {
-        get {
             return pendingBinaryOperation != nil
-        }
     }
     
     func getDescription() -> String {
