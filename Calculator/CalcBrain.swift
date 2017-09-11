@@ -15,6 +15,7 @@ struct CalcBrain {
     private var secondOperandAlreadyShown = false;
     private var mostRecentOperand: Operand? = nil
     
+    
     private enum Operand {
         case number(Double)
         case variable(String)
@@ -26,6 +27,13 @@ struct CalcBrain {
         case binaryOperation((Double, Double) -> Double)
         case equals
         case clear
+    }
+    
+    private indirect enum mathExpression {
+        case number(Double)
+        case constant(Operation)
+        case unaryOperation(Operation, mathExpression)
+        case binaryOperation(Operation, mathExpression, mathExpression)
     }
     
     private var operations: Dictionary<String,Operation> = [
@@ -127,6 +135,7 @@ struct CalcBrain {
     func evaluate(using variables: Dictionary<String, Double>? = nil) -> (result: Double?, isPending: Bool, description: String) {
         //TODO: problem 4
         //operands not found in Dictionary are equal to 0
+        func evaluateHelper(
     }
     
     var result: Double? {
