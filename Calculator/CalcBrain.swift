@@ -13,6 +13,13 @@ struct CalcBrain {
     private var accumulator: Double? //accumulator is unintialized in the beginning
     private var description: String = ""
     private var secondOperandAlreadyShown = false;
+    private var mostRecentOperand: Operand? = nil
+    
+    private enum Operand {
+        case number(Double)
+        case variable(String)
+    }
+    
     private enum Operation {
         case constant(Double)
         case unaryOperation((Double) -> Double)
@@ -104,7 +111,22 @@ struct CalcBrain {
         if !resultIsPending {
             description = doubleToString(operand)
         }
-        accumulator = operand
+        accumulator = operand //needs to be removed with new implementation using evaluate
+        mostRecentOperand = Operand.number(operand)
+        
+    }
+    
+    mutating func setOperand(variable symbol: String) {
+        //TODO: problem 3
+        if !resultIsPending {
+            description = symbol
+        }
+        mostRecentOperand = Operand.variable(symbol)
+    }
+    
+    func evaluate(using variables: Dictionary<String, Double>? = nil) -> (result: Double?, isPending: Bool, description: String) {
+        //TODO: problem 4
+        //operands not found in Dictionary are equal to 0
     }
     
     var result: Double? {

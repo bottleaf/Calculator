@@ -8,7 +8,7 @@
 
 //TODO:memory of operation
 //landscape mode
-
+//Test Change through subl
 import UIKit
 
 class ViewController: UIViewController {
@@ -58,15 +58,6 @@ class ViewController: UIViewController {
     
     private var calculatorBrain = CalcBrain();
     
-    
-//    @IBAction func touchDecimal(_ sender: UIButton) {
-//        if !numberAlreadyHasDecimal {
-//            if let textCurrentlyInDisplay = display.text {
-//                display.text = textCurrentlyInDisplay + "."
-//                numberAlreadyHasDecimal = true;
-//            }
-//        }
-//    }
     
     @IBAction func performOperation(_ sender: UIButton) {
         if userIsTyping {
