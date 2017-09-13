@@ -9,10 +9,9 @@
 import Foundation
 
 struct CalcBrain {
-    
-    private var accumulator: Double? //accumulator is unintialized in the beginning
     private var description: String = ""
     private var secondOperandAlreadyShown = false;
+    private var evaluationQueue = [EvaluationSteps]()
     private enum Operation {
         case constant(Double)
         case unaryOperation((Double) -> Double)
@@ -20,7 +19,11 @@ struct CalcBrain {
         case equals
         case clear
     }
-    
+    private enum EvaluationSteps {
+        case number(Double)
+        case variable(String)
+        case operationSymbol(String)
+    }
     private var operations: Dictionary<String,Operation> = [
         "π" : Operation.constant(Double.pi),
         "e" : Operation.constant(M_E),
@@ -60,7 +63,7 @@ struct CalcBrain {
                     } else {
                         description = symbol + "(" + description + ")"
                     }
-                        accumulator = function(accumulator!)
+                    accumulator = function(accumulator!)
                 }
             case .binaryOperation(let function):
                 if accumulator != nil {
@@ -77,6 +80,8 @@ struct CalcBrain {
                 secondOperandAlreadyShown = false
             }
         }
+
+        
     }
     
     private mutating func performPendingBinaryOperation() {
@@ -116,6 +121,15 @@ struct CalcBrain {
     //evaluate can access everything, even a "cache" of accumulated value and description
     func evaluate(using variables: Dictionary<String,Double>? = nil) ->
         (result: Double?, isPending: Bool, description: String){
+            var accumulator: Double?
+            func performOperation(representedBy symbol: String) {}
+            for evaluationStep in evaluationQueue {
+                switch evaluationStep {
+                case .number(let constant):
+                    setOperand(constant)
+                }
+            }
+                           }
             return (nil, true, "")
     }
     
