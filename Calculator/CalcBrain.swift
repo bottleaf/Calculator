@@ -42,6 +42,7 @@ struct CalcBrain {
     ]
     // ctrl + i = indent
     //performOperation changes the state of CalcBrain by calling the associaed function and updating accumulator.
+    //all these statements should go into evaluate
     mutating func performOperation(representedBy symbol: String) {
         if let operation = operations[symbol] {
             switch operation {
@@ -105,6 +106,17 @@ struct CalcBrain {
             description = doubleToString(operand)
         }
         accumulator = operand
+    }
+    
+    //TODO:Implement setOperand
+    mutating func setOperand(variableName: String) {
+    }
+    
+    //TODO:Implement evaluate
+    //evaluate can access everything, even a "cache" of accumulated value and description
+    func evaluate(using variables: Dictionary<String,Double>? = nil) ->
+        (result: Double?, isPending: Bool, description: String){
+            return (nil, true, "")
     }
     
     var result: Double? {
