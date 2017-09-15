@@ -9,8 +9,6 @@
 import Foundation
 
 struct CalcBrain {
-    private var description: String = ""
-    private var secondOperandAlreadyShown = false;
     private var evaluationQueue = [EvaluationStep]()
     private enum Operation {
         case constant(Double)
@@ -52,19 +50,7 @@ struct CalcBrain {
         
    // }
     
-    private mutating func performPendingBinaryOperation() {
-        if pendingBinaryOperation != nil && accumulator != nil {
-            if secondOperandAlreadyShown {
-                secondOperandAlreadyShown = false
-            } else {
-                description = description + doubleToString(accumulator!)
-            }
-            accumulator = pendingBinaryOperation!.perform(with: accumulator!)
-            pendingBinaryOperation = nil
-        }
-    }
-    
-    private var pendingBinaryOperation: PendingBinaryOperation?
+
     
     private struct PendingBinaryOperation {
         let function: (Double, Double) -> Double
@@ -89,112 +75,133 @@ struct CalcBrain {
     
     //TODO:Implement evaluate
     //evaluate can access everything, even a "cache" of accumulated value and description
-    func evaluate(using variables: Dictionary<String,Double>? = nil) ->
-        (result: Double?, isPending: Bool, description: String){
-            var accumulator: Double?
-            var description: String?
-            var lastOperandDescription: String?
-            var resultIsPending = false
-            var secondOperandAlreadyShown = false
-            // probably need to update description in setOperand functions because variable would be lost if only value is updated in accumulator
-            func setOperand(operand: Double) {
-                accumulator = operand
-                lastOperandDescription = doubleToString(operand)
+    func evaluate(using variables: Dictionary<String,Double>? = nil) -> (result: Double?, isPending: Bool, description: String){
+        var accumulator: Double?
+        var description = ""
+        var lastOperandDescription = ""
+        var pendingBinaryOperation: PendingBinaryOperation?
+        var resultIsPending = false
+        var secondOperandAlreadyShown = false
+        // probably need to update description in setOperand functions because variable would be lost if only value is updated in accumulator
+        func setOperand(operand: Double) {
+            if !resultIsPending {
+                description = doubleToString(operand)
             }
-            
-            func setOperand(_ variableName: String) {
-                if (variables == nil || variables![variableName] == nil) {
-                    accumulator = 0
+            accumulator = operand
+            lastOperandDescription = doubleToString(operand)
+        }
+        
+        func setOperand(_ variableName: String) {
+            if !resultIsPending {
+                description = variableName
+            }
+            if (variables == nil || variables![variableName] == nil) {
+                accumulator = 0
+            } else {
+                accumulator = variables![variableName]
+            }
+            lastOperandDescription = variableName
+        }
+
+        func performPendingBinaryOperation() {
+            if pendingBinaryOperation != nil && accumulator != nil {
+                if secondOperandAlreadyShown {
+                    secondOperandAlreadyShown = false
                 } else {
-                    accumulator = variables![variableName]
+                    description = description + lastOperandDescription
                 }
-                lastOperandDescription = variableName
+                accumulator = pendingBinaryOperation!.perform(with: accumulator!)
+                pendingBinaryOperation = nil
             }
-            
-            func performOperation(representedBy symbol: String) {
-                if let operation = operations[symbol] {
-                    switch operation {
-                    case .constant(let value):
-                        description? += symbol
+        }
+        
+        func performOperation(representedBy symbol: String) {
+            if let operation = operations[symbol] {
+                switch operation {
+                case .constant(let value):
+                    description += symbol
+                    if resultIsPending {
+                        secondOperandAlreadyShown = true
+                    }
+                    accumulator = value
+                case .unaryOperation(let function):
+                    if accumulator != nil {
                         if resultIsPending {
-                            secondOperandAlreadyShown = true
-                        }
-                        accumulator = value
-                    case .unaryOperation(let function):
-                        if accumulator != nil {
-                            if resultIsPending {
-                                if secondOperandAlreadyShown {
-                                    let endIndex = description?.index(description!.endIndex, offsetBy: lastOperandDescription?.count!)
-                                    description? = description?.substring(to: endIndex)  //removes the old last Operand part of the description
-                                }
-                                    lastOperandDescription = symbol + "(" + lastOperandDescription! + ")"
-                                    description? += lastOperandDescription!
-                                    secondOperandAlreadyShown = true;
-                            } else {
-                                description = symbol + "(" + description + ")"
+                            if secondOperandAlreadyShown {
+                                let endIndex = description.index(description.endIndex, offsetBy: lastOperandDescription.characters.count)
+                                description = description.substring(to: endIndex)  //removes the old last Operand part of the description
                             }
-                            accumulator = function(accumulator!)
+                            lastOperandDescription = symbol + "(" + lastOperandDescription + ")"
+                            description += lastOperandDescription
+                            secondOperandAlreadyShown = true;
+                        } else {
+                            description = symbol + "(" + description + ")"
                         }
-                    //resume with binaryOperation
-                    case .binaryOperation(let function):
-                        if accumulator != nil {
-                            pendingBinaryOperation = PendingBinaryOperation(function: function, firstOperand: accumulator!)
-                            description = description + symbol
-                            accumulator = nil
-                        }
-                    case .equals:
-                        performPendingBinaryOperation()
-                    case .clear:
-                        pendingBinaryOperation = nil
-                        accumulator = 0
-                        description = ""
-                        secondOperandAlreadyShown = false
+                        accumulator = function(accumulator!)
                     }
+                //resume with binaryOperation
+                case .binaryOperation(let function):
+                    if accumulator != nil {
+                        pendingBinaryOperation = PendingBinaryOperation(function: function, firstOperand: accumulator!)
+                        description = description + symbol
+                        accumulator = nil
+                    }
+                case .equals:
+                    performPendingBinaryOperation()
+                case .clear:
+                    pendingBinaryOperation = nil
+                    accumulator = 0
+                    description = ""
+                    lastOperandDescription = ""
+                    secondOperandAlreadyShown = false
+                    resultIsPending = false
                 }
             }
-            
-            for evaluationStep in evaluationQueue {
-                switch evaluationStep {
-                case .number(let constant):
-                    if !resultIsPending {
-                        description = doubleToString(constant)
-                    }
-                    setOperand(operand: constant) //implement setOperand(double)
-                case .variable(let variableName):
-                    if !resultIsPending {
-                        description = variableName
-                    }
-                    setOperand(variableName)
-                case .operationSymbol(let symbol:
-                    performOperation(representedBy: symbol)
+        }
+        //evaluate body
+        for evaluationStep in evaluationQueue {
+            switch evaluationStep {
+            case .number(let constant):
+                if !resultIsPending {
+                    description = doubleToString(constant)
                 }
+                setOperand(operand: constant) //implement setOperand(double)
+            case .variable(let variableName):
+                if !resultIsPending {
+                    description = variableName
+                }
+                setOperand(variableName)
+            case .operationSymbol(let symbol):
+                performOperation(representedBy: symbol)
             }
-                           }
-            return (nil, true, "")
+        }
+        //formatting description to be put in calculator
+        if description == "" {
+            description = " "
+        } else {
+            if resultIsPending {
+                description += " ..."
+            } else {
+                description += "="
+            }
+        }
+    return (accumulator, resultIsPending, description)
     }
-    
+
     var result: Double? {
-            return accumulator
+            return evaluate().result
     }
-    
+
     var resultIsPending: Bool {
-            return pendingBinaryOperation != nil
+            return evaluate().isPending
     }
     
     func getDescription() -> String {
-        if description == "" {
-            return " "
-        } else {
-            if resultIsPending {
-                return description + " ..."
-            } else {
-                return description + "="
-            }
-        }
+        return evaluate().description
     }
     
     func doubleToString(_ numToConvert: Double) -> String {
         return ((floor(numToConvert) == numToConvert) ? String(Int(numToConvert)) : String(numToConvert))
     }
-
 }
+
