@@ -30,7 +30,7 @@ struct CalcBrain {
         "tan" : Operation.unaryOperation(tan),
         "√" : Operation.unaryOperation(sqrt),
         "+/-": Operation.unaryOperation({-$0}),
-            //long way => {(op1: Double) -> Double in return -op1}
+        //long way => {(op1: Double) -> Double in return -op1}
         "%": Operation.unaryOperation({$0 * 100}),
         "1/x": Operation.unaryOperation({1 / $0}),
         "ln": Operation.unaryOperation(log),
@@ -44,13 +44,13 @@ struct CalcBrain {
     // ctrl + i = indent
     //performOperation changes the state of CalcBrain by calling the associaed function and updating accumulator.
     //all these statements should go into evaluate
-  //  mutating func performOperation(representedBy symbol: String) {
-
-
-        
-   // }
+    //  mutating func performOperation(representedBy symbol: String) {
     
-
+    
+    
+    // }
+    
+    
     
     private struct PendingBinaryOperation {
         let function: (Double, Double) -> Double
@@ -80,38 +80,49 @@ struct CalcBrain {
         var description = ""
         var lastOperandDescription = ""
         var pendingBinaryOperation: PendingBinaryOperation?
-        var resultIsPending = false
-        var secondOperandAlreadyShown = false
-        // probably need to update description in setOperand functions because variable would be lost if only value is updated in accumulator
+        var resultIsPending: Bool {
+            return pendingBinaryOperation != nil
+        }
+        var formattedDescription: String {
+            if description == "" {
+                return " "
+            } else {
+                if resultIsPending {
+                    return description + lastOperandDescription + "..."
+                } else {
+                    return description + "="
+                }
+            }
+        }
         func setOperand(operand: Double) {
             if !resultIsPending {
                 description = doubleToString(operand)
+            } else {
+                lastOperandDescription = doubleToString(operand)
             }
             accumulator = operand
-            lastOperandDescription = doubleToString(operand)
         }
         
         func setOperand(_ variableName: String) {
             if !resultIsPending {
                 description = variableName
+            } else {
+                lastOperandDescription = variableName
             }
             if (variables == nil || variables![variableName] == nil) {
                 accumulator = 0
             } else {
                 accumulator = variables![variableName]
             }
-            lastOperandDescription = variableName
         }
-
+        
         func performPendingBinaryOperation() {
             if pendingBinaryOperation != nil && accumulator != nil {
-                if secondOperandAlreadyShown {
-                    secondOperandAlreadyShown = false
-                } else {
-                    description = description + lastOperandDescription
-                }
+                description = description + lastOperandDescription
+                lastOperandDescription = ""
                 accumulator = pendingBinaryOperation!.perform(with: accumulator!)
                 pendingBinaryOperation = nil
+                
             }
         }
         
@@ -119,21 +130,16 @@ struct CalcBrain {
             if let operation = operations[symbol] {
                 switch operation {
                 case .constant(let value):
-                    description += symbol
                     if resultIsPending {
-                        secondOperandAlreadyShown = true
+                        lastOperandDescription = symbol
+                    } else {
+                        description = symbol
                     }
                     accumulator = value
                 case .unaryOperation(let function):
                     if accumulator != nil {
                         if resultIsPending {
-                            if secondOperandAlreadyShown {
-                                let endIndex = description.index(description.endIndex, offsetBy: lastOperandDescription.characters.count)
-                                description = description.substring(to: endIndex)  //removes the old last Operand part of the description
-                            }
                             lastOperandDescription = symbol + "(" + lastOperandDescription + ")"
-                            description += lastOperandDescription
-                            secondOperandAlreadyShown = true;
                         } else {
                             description = symbol + "(" + description + ")"
                         }
@@ -141,9 +147,14 @@ struct CalcBrain {
                     }
                 //resume with binaryOperation
                 case .binaryOperation(let function):
+                    //TODO: handle applying a binaryOperation after there is a pending binary operation
+                    //and a lastOperand(existing accumulator)(i.e. 5 + 5 (no equals yet) +..
+                    if resultIsPending {
+                        performPendingBinaryOperation()
+                    }
                     if accumulator != nil {
                         pendingBinaryOperation = PendingBinaryOperation(function: function, firstOperand: accumulator!)
-                        description = description + symbol
+                        description += symbol
                         accumulator = nil
                     }
                 case .equals:
@@ -153,12 +164,11 @@ struct CalcBrain {
                     accumulator = 0
                     description = ""
                     lastOperandDescription = ""
-                    secondOperandAlreadyShown = false
-                    resultIsPending = false
                 }
             }
         }
-        //evaluate body
+        
+        //evaluate body iterates thorugh evaluationQueue
         for evaluationStep in evaluationQueue {
             switch evaluationStep {
             case .number(let constant):
@@ -167,33 +177,21 @@ struct CalcBrain {
                 }
                 setOperand(operand: constant) //implement setOperand(double)
             case .variable(let variableName):
-                if !resultIsPending {
-                    description = variableName
-                }
                 setOperand(variableName)
             case .operationSymbol(let symbol):
                 performOperation(representedBy: symbol)
             }
         }
-        //formatting description to be put in calculator
-        if description == "" {
-            description = " "
-        } else {
-            if resultIsPending {
-                description += " ..."
-            } else {
-                description += "="
-            }
-        }
-    return (accumulator, resultIsPending, description)
-    }
 
+        return (accumulator, resultIsPending, formattedDescription)
+    }
+    
     var result: Double? {
-            return evaluate().result
+        return evaluate().result
     }
-
+    
     var resultIsPending: Bool {
-            return evaluate().isPending
+        return evaluate().isPending
     }
     
     func getDescription() -> String {
