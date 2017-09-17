@@ -57,6 +57,8 @@ class ViewController: UIViewController {
     }
     
     private var calculatorBrain = CalcBrain();
+    private var variableDictionary = [String: Double]()
+
     
     
 //    @IBAction func touchDecimal(_ sender: UIButton) {
@@ -84,6 +86,7 @@ class ViewController: UIViewController {
         }
     }
     @IBAction func performOperationWithVariabValue(_ sender: UIButton) {
+        displayValue = 3
     }
     
 
