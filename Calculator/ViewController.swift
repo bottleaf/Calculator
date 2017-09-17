@@ -86,7 +86,20 @@ class ViewController: UIViewController {
         }
     }
     @IBAction func performOperationWithVariabValue(_ sender: UIButton) {
-        displayValue = 3
+        /* user must have manually put in a new number in the display to be used as a variable.
+         ** using the last result as the variable value is unlikely to be deliberate
+         */
+        if userIsTyping {
+            variableDictionary["M"] = displayValue
+            calculatorBrain.performOperation(representedBy: "=")
+            let evalOutput = calculatorBrain.evaluate(using: variableDictionary)
+            sequenceOfOperands.text = evalOutput.description
+            if let result = evalOutput.result {
+                displayValue = result
+                userIsTyping = false
+            }
+        }
+
     }
     
 
