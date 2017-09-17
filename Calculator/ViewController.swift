@@ -16,8 +16,14 @@ class ViewController: UIViewController {
     @IBOutlet weak var display: UILabel!
     @IBOutlet weak var sequenceOfOperands: UILabel!
      var userIsTyping = false //or userCanAddDigits
-//    var numberAlreadyHasDecimal = false
+
     @IBAction func touchDigit(_ sender: UIButton) {
+        //if user is putting in numbers, a variable in display is cleared
+        
+        if variableInDisplay != nil {
+            variableInDisplay = nil
+            userIsTyping = false
+        }
         let digit = sender.currentTitle!
         if digit == "." {
             if userIsTyping {
@@ -58,6 +64,8 @@ class ViewController: UIViewController {
     
     private var calculatorBrain = CalcBrain();
     private var variableDictionary = [String: Double]()
+    private var variableInDisplay: String?
+    
 
     
     
@@ -78,13 +86,9 @@ class ViewController: UIViewController {
         if let operatorSymbol = sender.currentTitle {
             calculatorBrain.performOperation(representedBy: operatorSymbol)
         }
-        let evalOutput = calculatorBrain.evaluate()
-        sequenceOfOperands.text = evalOutput.description
-        if let result = evalOutput.result {
-            displayValue = result
-            userIsTyping = false
-        }
+        evaluate()
     }
+    
     @IBAction func performOperationWithVariabValue(_ sender: UIButton) {
         /* user must have manually put in a new number in the display to be used as a variable.
          ** using the last result as the variable value is unlikely to be deliberate
@@ -92,15 +96,30 @@ class ViewController: UIViewController {
         if userIsTyping {
             variableDictionary["M"] = displayValue
             calculatorBrain.performOperation(representedBy: "=")
-            let evalOutput = calculatorBrain.evaluate(using: variableDictionary)
-            sequenceOfOperands.text = evalOutput.description
-            if let result = evalOutput.result {
-                displayValue = result
-                userIsTyping = false
-            }
+        evaluate()
         }
-
     }
+    
+    func evaluate() {
+        let evalOutput = calculatorBrain.evaluate(using: variableDictionary)
+        sequenceOfOperands.text = evalOutput.description
+        if let result = evalOutput.result {
+            displayValue = result
+            userIsTyping = false
+        }
+    }
+    
+    @IBAction func useVariable(_ sender: UIButton) {
+        /* clicking the variable "M" button only puts M in the display
+        but doesn't set Operand because the user might want to write-over
+        with numbers.  This preps the variable to be used to setOperand
+        */
+        let variableName = sender.currentTitle!
+        display.text = variableName
+        variableInDisplay = variableName
+        userIsTyping = false
+    }
+    
     
 
 }
