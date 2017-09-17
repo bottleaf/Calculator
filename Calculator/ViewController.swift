@@ -15,8 +15,8 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var display: UILabel!
     @IBOutlet weak var sequenceOfOperands: UILabel!
-     var userIsTyping = false //or userCanAddDigits
-
+    var userIsTyping = false
+    //TODO CLEAR NEEDS TO CLEAR VARIABLES
     @IBAction func touchDigit(_ sender: UIButton) {
         //if user is putting in numbers, a variable in display is cleared
         
@@ -83,6 +83,9 @@ class ViewController: UIViewController {
             calculatorBrain.setOperand(displayValue)
             userIsTyping = false
         }
+        if variableInDisplay != nil {
+            calculatorBrain.setOperand(variableName: variableInDisplay!)
+        }
         if let operatorSymbol = sender.currentTitle {
             calculatorBrain.performOperation(representedBy: operatorSymbol)
         }
@@ -92,6 +95,8 @@ class ViewController: UIViewController {
     @IBAction func performOperationWithVariabValue(_ sender: UIButton) {
         /* user must have manually put in a new number in the display to be used as a variable.
          ** using the last result as the variable value is unlikely to be deliberate
+         ** this works if zero is entered
+         ** this also means can't directly push ->M after using M
          */
         if userIsTyping {
             variableDictionary["M"] = displayValue
