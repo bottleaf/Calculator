@@ -83,9 +83,9 @@ class ViewController: UIViewController {
             userIsTyping = false
         }
     }
+    @IBAction func performOperationWithVariabValue(_ sender: UIButton) {
+    }
     
-    /*/*probably need a func to makeDisplayable(Double)->string that fits and
-    takes off trailing zeros*/
-    nvm, we can used computer properties */
+
 }
 
