@@ -10,6 +10,7 @@ import Foundation
 
 struct CalcBrain {
     private var evaluationQueue = [EvaluationStep]()
+        //TODO: add unique String functions for unaryOperations that displays operation properly not just func(operand)
     private enum Operation {
         case constant(Double)
         case unaryOperation((Double) -> Double)
@@ -22,6 +23,7 @@ struct CalcBrain {
         case variable(String)
         case operationSymbol(String)
     }
+
     private var operations: Dictionary<String,Operation> = [
         "π" : Operation.constant(Double.pi),
         "e" : Operation.constant(M_E),
@@ -41,16 +43,6 @@ struct CalcBrain {
         "=": Operation.equals,
         "C": Operation.clear
     ]
-    // ctrl + i = indent
-    //performOperation changes the state of CalcBrain by calling the associaed function and updating accumulator.
-    //all these statements should go into evaluate
-    //  mutating func performOperation(representedBy symbol: String) {
-    
-    
-    
-    // }
-    
-    
     
     private struct PendingBinaryOperation {
         let function: (Double, Double) -> Double
@@ -72,13 +64,11 @@ struct CalcBrain {
         evaluationQueue.append(EvaluationStep.operationSymbol(symbol))
     }
     
-    
-    //TODO:Implement evaluate
-    //evaluate can access everything, even a "cache" of accumulated value and description
     func evaluate(using variables: Dictionary<String,Double>? = nil) -> (result: Double?, isPending: Bool, description: String){
         var accumulator: Double?
         var description = ""
         var lastOperandDescription = ""
+        //This variable is used for unaryOperations on second operand of pending binaryOperations
         var pendingBinaryOperation: PendingBinaryOperation?
         var resultIsPending: Bool {
             return pendingBinaryOperation != nil
@@ -94,6 +84,11 @@ struct CalcBrain {
                 }
             }
         }
+        
+        func doubleToString(_ numToConvert: Double) -> String {
+            return ((floor(numToConvert) == numToConvert) ? String(Int(numToConvert)) : String(numToConvert))
+        }
+
         func setOperand(operand: Double) {
             if !resultIsPending {
                 description = doubleToString(operand)
@@ -145,10 +140,8 @@ struct CalcBrain {
                         }
                         accumulator = function(accumulator!)
                     }
-                //resume with binaryOperation
+                //TODO: check precedence of previous binary function to properly display description (e.g. 5 + 5 * 3 -> (5 + 5) * 3
                 case .binaryOperation(let function):
-                    //TODO: handle applying a binaryOperation after there is a pending binary operation
-                    //and a lastOperand(existing accumulator)(i.e. 5 + 5 (no equals yet) +..
                     if resultIsPending {
                         performPendingBinaryOperation()
                     }
@@ -198,8 +191,5 @@ struct CalcBrain {
         return evaluate().description
     }
     
-    func doubleToString(_ numToConvert: Double) -> String {
-        return ((floor(numToConvert) == numToConvert) ? String(Int(numToConvert)) : String(numToConvert))
-    }
 }
 
