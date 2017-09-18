@@ -16,11 +16,12 @@ class ViewController: UIViewController {
     @IBOutlet weak var display: UILabel!
     @IBOutlet weak var sequenceOfOperands: UILabel!
     @IBOutlet weak var useVariableButton: UIButton!
+    @IBOutlet weak var variablesDisplay: UILabel!
     
     var userIsTyping = false
-    //TODO CLEAR NEEDS TO CLEAR VARIABLES
-    //Clear libary
-    //reset useVariableButton
+    //TODO CLEAR NEEDS TO CLEAR VARIABLES and call displayVariables
+    //Clear stack in model
+    //reset display
     @IBAction func touchDigit(_ sender: UIButton) {
         //if user is putting in numbers, a variable in display is cleared
         
@@ -104,7 +105,7 @@ class ViewController: UIViewController {
          */
         if userIsTyping {
             variableDictionary["M"] = displayValue
-            useVariableButton.setTitle("M(" + display.text! + ")", for: UIControlState.normal)
+            displayVariables()
             calculatorBrain.performOperation(representedBy: "=")
         evaluate()
         }
@@ -116,6 +117,12 @@ class ViewController: UIViewController {
         if let result = evalOutput.result {
             displayValue = result
             userIsTyping = false
+        }
+    }
+    
+    func displayVariables() {
+        for (variableName, variableValue) in variableDictionary {
+            variablesDisplay.text = variablesDisplay.text! + variableName + ": " + String(variableValue) + " "
         }
     }
     
