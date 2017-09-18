@@ -443,6 +443,7 @@
                     <connections>
                         <outlet property="display" destination="3qb-Xv-oD6" id="BgS-Ja-xBf"/>
                         <outlet property="sequenceOfOperands" destination="474-Lo-02P" id="Eaq-N5-QoO"/>
+                        <outlet property="useVariableButton" destination="NX4-iG-BUs" id="6dw-1a-M2D"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
