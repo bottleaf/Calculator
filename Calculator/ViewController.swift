@@ -120,6 +120,7 @@ class ViewController: UIViewController {
         userIsTyping = false
         displayValue = 0.0
         sequenceOfOperands.text = " "
+        calculatorBrain.resetCalculatorBrain()
     }
     
     func evaluate() {
