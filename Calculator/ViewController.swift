@@ -99,17 +99,10 @@ class ViewController: UIViewController {
     }
     
     @IBAction func performOperationWithVariabValue(_ sender: UIButton) {
-        /* user must have manually put in a new number in the display to be used as a variable.
-         ** using the last result as the variable value is unlikely to be deliberate
-         ** this works if zero is entered
-         ** this also means can't directly push ->M after using M
-         */
-        if userIsTyping {
-            variableDictionary["M"] = displayValue
-            displayVariables()
-            calculatorBrain.performOperation(representedBy: "=")
+        variableDictionary["M"] = displayValue
+        displayVariables()
+        calculatorBrain.performOperation(representedBy: "=")
         evaluate()
-        }
     }
     //TODO: verify reset Works
     //for now can't test because variable and other dont' work
