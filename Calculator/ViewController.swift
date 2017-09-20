@@ -90,6 +90,7 @@ class ViewController: UIViewController {
         }
         if variableInDisplay != nil {
             calculatorBrain.setOperand(variableName: variableInDisplay!)
+            variableInDisplay = nil
         }
         if let operatorSymbol = sender.currentTitle {
             calculatorBrain.performOperation(representedBy: operatorSymbol)
@@ -110,6 +111,16 @@ class ViewController: UIViewController {
         evaluate()
         }
     }
+    //TODO: verify reset Works
+    //for now can't test because variable and other dont' work
+    @IBAction func resetCalculatorModel(_ sender: UIButton) {
+        variableDictionary = [String: Double]()
+        displayVariables()
+        variableInDisplay = nil
+        userIsTyping = false
+        displayValue = 0.0
+        sequenceOfOperands.text = " "
+    }
     
     func evaluate() {
         let evalOutput = calculatorBrain.evaluate(using: variableDictionary)
@@ -121,6 +132,7 @@ class ViewController: UIViewController {
     }
     
     func displayVariables() {
+        variablesDisplay.text = " "
         for (variableName, variableValue) in variableDictionary {
             variablesDisplay.text = variablesDisplay.text! + variableName + ": " + String(variableValue) + " "
         }

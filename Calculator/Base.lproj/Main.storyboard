@@ -60,7 +60,7 @@
                                                             <color key="titleColor" red="0.15686274510000001" green="0.32549019610000002" blue="0.41960784309999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         </state>
                                                         <connections>
-                                                            <action selector="performOperation:" destination="BYZ-38-t0r" eventType="touchUpInside" id="AbJ-2S-q19"/>
+                                                            <action selector="resetCalculatorModel:" destination="BYZ-38-t0r" eventType="touchUpInside" id="uV9-LE-Ihk"/>
                                                         </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DbJ-Gp-3aK">

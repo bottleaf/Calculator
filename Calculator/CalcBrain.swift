@@ -64,6 +64,10 @@ struct CalcBrain {
         evaluationQueue.append(EvaluationStep.operationSymbol(symbol))
     }
     
+    mutating func resetCalculatorBrain() {
+        evaluationQueue = [EvaluationStep]()
+    }
+    
     func evaluate(using variables: Dictionary<String,Double>? = nil) -> (result: Double?, isPending: Bool, description: String){
         var accumulator: Double?
         var description = ""
