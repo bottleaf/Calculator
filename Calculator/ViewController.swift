@@ -125,6 +125,9 @@ class ViewController: UIViewController {
                     display.text!.remove(at: displayText.index(before: displayText.endIndex))
                 }
             }
+        } else {
+            calculatorBrain.undoLastOperation()
+            evaluate()
         }
     }
     

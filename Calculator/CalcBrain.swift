@@ -68,6 +68,10 @@ struct CalcBrain {
         evaluationQueue = [EvaluationStep]()
     }
     
+    mutating func undoLastOperation() {
+        evaluationQueue.removeLast()
+    }
+    
     func evaluate(using variables: Dictionary<String,Double>? = nil) -> (result: Double?, isPending: Bool, description: String){
         var accumulator: Double?
         var description = ""
