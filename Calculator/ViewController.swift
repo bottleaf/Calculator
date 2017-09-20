@@ -85,9 +85,9 @@ class ViewController: UIViewController {
     
     @IBAction func performOperation(_ sender: UIButton) {
         if userIsTyping {
-            calculatorBrain.setOperand(displayValue)
             userIsTyping = false
         }
+        calculatorBrain.setOperand(displayValue)
         if variableInDisplay != nil {
             calculatorBrain.setOperand(variableName: variableInDisplay!)
             variableInDisplay = nil
@@ -115,6 +115,19 @@ class ViewController: UIViewController {
         sequenceOfOperands.text = " "
         calculatorBrain.resetCalculatorBrain()
     }
+    
+    @IBAction func undo(_ sender: UIButton) {
+        if userIsTyping {
+            if displayValue == 0 {
+                userIsTyping = false
+            } else {
+                if let displayText = display.text {
+                    display.text!.remove(at: displayText.index(before: displayText.endIndex))
+                }
+            }
+        }
+    }
+    
     
     func evaluate() {
         let evalOutput = calculatorBrain.evaluate(using: variableDictionary)
