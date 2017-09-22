@@ -87,10 +87,12 @@ class ViewController: UIViewController {
         if userIsTyping {
             userIsTyping = false
         }
-        calculatorBrain.setOperand(displayValue)
+
         if variableInDisplay != nil {
             calculatorBrain.setOperand(variableName: variableInDisplay!)
             variableInDisplay = nil
+        } else {
+            calculatorBrain.setOperand(displayValue)
         }
         if let operatorSymbol = sender.currentTitle {
             calculatorBrain.performOperation(representedBy: operatorSymbol)
